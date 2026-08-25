@@ -1,7 +1,6 @@
 package httpapi
 
 import (
-	"context"
 	"net/http"
 )
 
@@ -12,7 +11,9 @@ func (s *Server) handlePublishSnapshot(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, err)
 		return
 	}
-	snap, err := s.app.PublishSnapshot(context.Background(), id)
+	// 使用请求上下文：客户端取消请求时，发布操作须随之下发取消，
+	// 避免脱离请求生命周期继续生成新的快照版本。
+	snap, err := s.app.PublishSnapshot(r.Context(), id)
 	if err != nil {
 		writeErr(w, err)
 		return

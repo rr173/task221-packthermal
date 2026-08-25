@@ -24,7 +24,7 @@ func scanSnapshot(row interface{ Scan(...any) error }) (*model.Snapshot, error) 
 // NextVersion 返回某试验下一个可用版本号。
 func (s *SnapshotStore) NextVersion(ctx context.Context, trialID int64) (int, error) {
 	var v int
-	err := s.db.sql.QueryRowContext(context.Background(),
+	err := s.db.sql.QueryRowContext(ctx,
 		`SELECT COALESCE(MAX(version), 0) FROM snapshots WHERE trial_id=?`, trialID).Scan(&v)
 	if err != nil {
 		return 0, err
@@ -34,7 +34,7 @@ func (s *SnapshotStore) NextVersion(ctx context.Context, trialID int64) (int, er
 
 // CreateSnapshot 发布一条快照，同试验同版本冲突返回 model.ErrDuplicate。
 func (s *SnapshotStore) CreateSnapshot(ctx context.Context, sn *model.Snapshot) (*model.Snapshot, error) {
-	res, err := s.db.sql.ExecContext(context.Background(),
+	res, err := s.db.sql.ExecContext(ctx,
 		`INSERT INTO snapshots(trial_id, version, state, summary, created_at) VALUES(?,?,?,?,?)`,
 		sn.TrialID, sn.Version, sn.State, sn.Summary, nowISO())
 	if err != nil {

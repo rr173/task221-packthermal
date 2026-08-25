@@ -481,7 +481,7 @@ func (s *Service) PublishSnapshot(ctx context.Context, trialID int64) (*model.Sn
 		return nil, fmt.Errorf("%w: no inversion result to snapshot", model.ErrInvalidInput)
 	}
 	last := invs[len(invs)-1]
-	version, err := s.repos.Snapshot.NextVersion(context.Background(), trialID)
+	version, err := s.repos.Snapshot.NextVersion(ctx, trialID)
 	if err != nil {
 		return nil, err
 	}
@@ -491,7 +491,7 @@ func (s *Service) PublishSnapshot(ctx context.Context, trialID int64) (*model.Sn
 		State:   model.SnapshotComputing,
 		Summary: fmt.Sprintf("R=%.4f K/W C=%.4f J/K tau=%.4f s", last.REff, last.CEff, last.Tau),
 	}
-	created, err := s.repos.Snapshot.CreateSnapshot(context.Background(), sn)
+	created, err := s.repos.Snapshot.CreateSnapshot(ctx, sn)
 	if err != nil {
 		return nil, err
 	}
