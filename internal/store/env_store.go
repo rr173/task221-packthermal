@@ -37,7 +37,7 @@ func (s *EnvStore) CreateEnv(ctx context.Context, e *model.EnvProfile) (*model.E
 		e.TrialID, e.Name, e.Fingerprint, js, nowISO())
 	if err != nil {
 		if isUniqueViolation(err) {
-			return nil, model.ErrInvalidInput
+			return nil, model.ErrDuplicate
 		}
 		return nil, err
 	}

@@ -25,7 +25,7 @@ func (s *Server) handleAddEnv(w http.ResponseWriter, r *http.Request) {
 	}
 	created, err := s.app.AddEnv(r.Context(), id, req.Name, req.Samples)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		writeErr(w, err)
 		return
 	}
 	writeJSON(w, http.StatusCreated, created)

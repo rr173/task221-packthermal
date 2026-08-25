@@ -147,7 +147,7 @@ func (s *Service) AddEnv(ctx context.Context, trialID int64, name string, sample
 	e := &model.EnvProfile{TrialID: trialID, Name: name, Fingerprint: ingest.FingerprintEnv(samples), Samples: samples}
 	created, err := s.repos.Env.CreateEnv(ctx, e)
 	if err != nil {
-		return nil, fmt.Errorf("%w: env storage failed", model.ErrInvalidInput)
+		return nil, err
 	}
 	_ = s.repos.Audit.Record(ctx, trialID, "env.add", name)
 	return created, nil
