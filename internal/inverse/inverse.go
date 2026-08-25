@@ -38,8 +38,14 @@ type FitResult struct {
 }
 
 // FitRC 执行时间常数反演并分离 R/C 参数。
+//
+// 空采样是合法的业务前置条件缺失（如试验未登记内壁参考传感器），不应触发
+// 越界 panic；此处直接返回零值结果（Converged=false），由调用方据此判定为
+// 可处理的领域错误。
 func FitRC(in FitInput) FitResult {
-	_ = in.Samples[0]
+	if len(in.Samples) == 0 {
+		return FitResult{}
+	}
 	tau, converged, iters := fitTau(in)
 	res := FitResult{Tau: tau, Converged: converged, Iterations: iters}
 	res.Rms = RMS(Residuals(in, tau))

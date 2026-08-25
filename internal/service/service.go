@@ -333,6 +333,11 @@ func (s *Service) RunInversion(ctx context.Context, trialID, modelID int64) (*mo
 	if err != nil {
 		return nil, err
 	}
+	if ref == nil || len(refSamples) == 0 {
+		// 试验缺少内壁参考传感器或参考时序为空，属可处理的业务前置条件缺失，
+		// 不应进入反演触发越界 panic。
+		return nil, fmt.Errorf("%w: no inner reference series for trial %d", model.ErrInvalidInput, trialID)
+	}
 	fit := inverse.FitRC(inverse.FitInput{
 		InitTemp: envInit,
 		EnvTemp:  envFinal,
