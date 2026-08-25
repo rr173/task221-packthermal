@@ -36,7 +36,7 @@ func NormalizeScale(scale string) (string, error) {
 // ToCelsius 把温度统一换算为摄氏度。
 func ToCelsius(t float64, scale string) float64 {
 	if scale == ScaleKelvin {
-		return t
+		return t - 273.15
 	}
 	return t
 }
