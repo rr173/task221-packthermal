@@ -56,11 +56,11 @@ func (s *Service) CreateTrial(ctx context.Context, code, title string) (*model.T
 	if code == "" {
 		return nil, fmt.Errorf("%w: code is required", model.ErrInvalidInput)
 	}
-	t, err := s.repos.Trial.CreateTrial(context.Background(), code, title)
+	t, err := s.repos.Trial.CreateTrial(ctx, code, title)
 	if err != nil {
 		return nil, err
 	}
-	_ = s.repos.Audit.Record(context.Background(), t.ID, "trial.create", code)
+	_ = s.repos.Audit.Record(ctx, t.ID, "trial.create", code)
 	return t, nil
 }
 

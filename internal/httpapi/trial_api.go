@@ -1,7 +1,6 @@
 package httpapi
 
 import (
-	"context"
 	"net/http"
 
 	"task221-packthermal/internal/model"
@@ -19,7 +18,7 @@ func (s *Server) handleCreateTrial(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, model.Wrap(model.ErrInvalidInput, "decode body: "+err.Error()))
 		return
 	}
-	t, err := s.app.CreateTrial(context.Background(), req.Code, req.Title)
+	t, err := s.app.CreateTrial(r.Context(), req.Code, req.Title)
 	if err != nil {
 		writeErr(w, err)
 		return

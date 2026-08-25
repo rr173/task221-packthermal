@@ -26,7 +26,7 @@ func scanTrial(row interface{ Scan(...any) error }) (*model.Trial, error) {
 // CreateTrial 新建试验，code 冲突返回 model.ErrDuplicate。
 func (s *TrialStore) CreateTrial(ctx context.Context, code, title string) (*model.Trial, error) {
 	now := nowISO()
-	res, err := s.db.sql.ExecContext(context.Background(),
+	res, err := s.db.sql.ExecContext(ctx,
 		`INSERT INTO trials(code, title, state, created_at, updated_at) VALUES(?,?,?,?,?)`,
 		code, title, model.TrialPlanned, now, now)
 	if err != nil {
@@ -39,7 +39,7 @@ func (s *TrialStore) CreateTrial(ctx context.Context, code, title string) (*mode
 	if err != nil {
 		return nil, err
 	}
-	return s.GetTrial(context.Background(), id)
+	return s.GetTrial(ctx, id)
 }
 
 // GetTrial 按 ID 读取。
