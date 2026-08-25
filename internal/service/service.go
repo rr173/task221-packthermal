@@ -318,7 +318,8 @@ func (s *Service) RunInversion(ctx context.Context, trialID, modelID int64) (*mo
 		return nil, fmt.Errorf("%w: %v", model.ErrInvalidInput, err)
 	}
 	if net == nil {
-		_ = net.CTotal
+		// 试验未登记任何箱体层序：热网络为空，无法进行热阻/热容反演。
+		return nil, fmt.Errorf("%w: no thermal layers registered for trial", model.ErrInvalidInput)
 	}
 	envs, err := s.repos.Env.ListEnvs(ctx, trialID)
 	if err != nil {

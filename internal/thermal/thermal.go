@@ -23,7 +23,7 @@ type Network struct {
 // BuildNetwork 由层序构造热网络，计算等效热阻、热容与时间常数。
 func BuildNetwork(layers []model.Layer) (*Network, error) {
 	if len(layers) == 0 {
-		return nil, nil
+		return nil, errors.New("thermal: no layers provided")
 	}
 	n := &Network{Layers: layers}
 	var rTotal, cTotal float64
