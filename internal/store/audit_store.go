@@ -6,6 +6,9 @@ import (
 	"task221-packthermal/internal/model"
 )
 
+// DefaultAuditLimit 是未指定 limit 时返回的默认事件条数。
+const DefaultAuditLimit = 100
+
 // AuditStore 持久化审计台账。
 type AuditStore struct{ db *DB }
 
@@ -48,10 +51,10 @@ func (s *AuditStore) List(ctx context.Context, trialID int64) ([]*model.AuditEve
 	return out, rows.Err()
 }
 
-// ListAll 列出全部审计事件。
+// ListAll 列出全部审计事件。limit<=0 时按默认条数返回，避免零值层层传递导致空结果。
 func (s *AuditStore) ListAll(ctx context.Context, limit int) ([]*model.AuditEvent, error) {
 	if limit <= 0 {
-		return []*model.AuditEvent{}, nil
+		limit = DefaultAuditLimit
 	}
 	rows, err := s.db.sql.QueryContext(ctx,
 		`SELECT `+auditCols+` FROM audit_events ORDER BY id DESC LIMIT ?`, limit)

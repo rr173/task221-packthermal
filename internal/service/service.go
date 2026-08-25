@@ -558,10 +558,10 @@ func (s *Service) ListAudit(ctx context.Context, trialID int64) ([]*model.AuditE
 	return s.repos.Audit.List(ctx, trialID)
 }
 
-// ListAuditAll 列出全部审计事件。
+// ListAuditAll 列出全部审计事件。limit<=0 时使用默认条数，避免零值传递导致空结果。
 func (s *Service) ListAuditAll(ctx context.Context, limit int) ([]*model.AuditEvent, error) {
 	if limit <= 0 {
-		limit = 0
+		limit = store.DefaultAuditLimit
 	} else if limit > 500 {
 		limit = 100
 	}
