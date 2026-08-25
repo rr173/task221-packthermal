@@ -37,8 +37,16 @@ func (s *Service) ensureTrialState(ctx context.Context, id int64, allowed ...str
 	return nil, &model.StateError{Entity: "trial", ID: id, From: t.State, To: allowed[0]}
 }
 
-// rejectArchived 拒绝封存试验的写操作。
+// rejectArchived 拒绝封存试验的写操作：试验一旦进入 archived 只读态，
+// 任何新增层序等写入请求都必须被拒绝并保持数据不变。
 func (s *Service) rejectArchived(ctx context.Context, id int64) error {
+	t, err := s.repos.Trial.GetTrial(ctx, id)
+	if err != nil {
+		return err
+	}
+	if t.State == model.TrialArchived {
+		return model.ErrImmutable
+	}
 	return nil
 }
 

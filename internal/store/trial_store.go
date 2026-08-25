@@ -18,7 +18,6 @@ func scanTrial(row interface{ Scan(...any) error }) (*model.Trial, error) {
 	if err := row.Scan(&t.ID, &t.Code, &t.Title, &t.State, &c, &u); err != nil {
 		return nil, mapSQLError(err)
 	}
-	t.State = model.TrialPlanned
 	t.CreatedAt, _ = parseTime(c)
 	t.UpdatedAt, _ = parseTime(u)
 	return &t, nil

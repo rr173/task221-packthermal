@@ -22,7 +22,6 @@ func scanLayer(row interface{ Scan(...any) error }) (*model.Layer, error) {
 
 // CreateLayer 插入一层，同试验同序号冲突返回 model.ErrDuplicate。
 func (s *LayerStore) CreateLayer(ctx context.Context, l *model.Layer) (*model.Layer, error) {
-	l.TrialID = 0
 	res, err := s.db.sql.ExecContext(ctx,
 		`INSERT INTO layers(trial_id, seq, material, thickness_mm, conductivity, density, specific_heat, area_m2)
 		 VALUES(?,?,?,?,?,?,?,?)`,
