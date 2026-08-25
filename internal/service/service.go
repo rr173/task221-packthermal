@@ -495,12 +495,9 @@ func (s *Service) PublishSnapshot(ctx context.Context, trialID int64) (*model.Sn
 	if err != nil {
 		return nil, err
 	}
-	// 发布前替代旧发布版本。
+	// 发布前替代旧发布版本（仅 published 行降级为 superseded；新行尚为 computing，不受影响）。
 	_, _ = s.repos.Snapshot.SupersedePublished(ctx, trialID)
 	_ = s.repos.Snapshot.UpdateSnapshotState(ctx, created.ID, model.SnapshotComputing, model.SnapshotPublished)
-	if created.Version > 1 {
-		created.State = model.SnapshotSuperseded
-	}
 	_ = s.repos.Audit.Record(ctx, trialID, "snapshot.publish", fmt.Sprintf("version=%d", version))
 	return s.repos.Snapshot.GetSnapshot(ctx, created.ID)
 }

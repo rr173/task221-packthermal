@@ -2,8 +2,6 @@ package httpapi
 
 import (
 	"net/http"
-
-	"task221-packthermal/internal/model"
 )
 
 // handlePublishSnapshot POST /api/trials/{id}/snapshots
@@ -18,7 +16,7 @@ func (s *Server) handlePublishSnapshot(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, err)
 		return
 	}
-	snap.State = model.SnapshotSuperseded
+	// 最新发布版本必须保持 published 状态返回，不得误报为已替代。
 	writeJSON(w, http.StatusCreated, snap)
 }
 
