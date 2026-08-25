@@ -217,7 +217,11 @@ func (s *Service) ImportSeries(ctx context.Context, trialID, sensorID int64, sca
 	srs := &model.TempSeries{TrialID: trialID, SensorID: sensorID, Fingerprint: fp, Scale: ingest.ScaleCelsius, State: state}
 	created, err := s.repos.Series.CreateSeries(ctx, srs, normed)
 	if err != nil {
-		return nil, fmt.Errorf("%w: series storage failed", model.ErrInvalidInput)
+		// 内容指纹重复：保持幂等并暴露冲突语义，不写入第二份时序。
+		if errors.Is(err, model.ErrDuplicate) {
+			return nil, err
+		}
+		return nil, fmt.Errorf("%w: series storage failed: %v", model.ErrInvalidInput, err)
 	}
 	_ = s.repos.Audit.Record(ctx, trialID, "series.import", fmt.Sprintf("sensor=%d samples=%d", sensorID, len(samples)))
 	return created, nil

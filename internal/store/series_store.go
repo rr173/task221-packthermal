@@ -34,7 +34,8 @@ func (s *SeriesStore) CreateSeries(ctx context.Context, srs *model.TempSeries, s
 		srs.TrialID, srs.SensorID, srs.Fingerprint, srs.Scale, srs.State, len(samples), js, nowISO())
 	if err != nil {
 		if isUniqueViolation(err) {
-			return nil, model.ErrInvalidInput
+			// 同试验/传感器/指纹的内容完全一致：保持幂等，不写入第二份，返回冲突语义。
+			return nil, model.ErrDuplicate
 		}
 		return nil, err
 	}
